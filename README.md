@@ -59,8 +59,8 @@ dataacademy-portfolio/
 ├── requirements.txt
 └── README.md
 ```
-####🚀 Getting started
-1. Prerequisites
+#### 🚀 Getting started
+**1. Prerequisites**
 
 Python 3.10+
 
@@ -68,13 +68,13 @@ PostgreSQL 14+ installed and running
 
 psql available in your terminal (psql --version should work)
 
-2. Clone the repo
+**2. Clone the repo**
 
 ```
 git clone https://github.com/<your-username>/dataacademy-teacher-dashboard.git
 cd dataacademy-teacher-dashboard
 ```
-3. Create and activate a virtual environment
+**3. Create and activate a virtual environment**
 
 ```
 # Windows (PowerShell)
@@ -85,14 +85,14 @@ python -m venv .venv
 python3 -m venv .venv
 source .venv/bin/activate
 ```
-4. Install dependencies
+**4. Install dependencies**
 
 ```
 pip install -r requirements.txt
 ```
 
-####🗄️ Create the PostgreSQL database
-Step 1 – Create the dataacademy database
+#### 🗄️ Create the PostgreSQL database
+**Step 1 – Create the dataacademy database**
 
 ```
 psql -U postgres
@@ -105,7 +105,7 @@ CREATE DATABASE dataacademy;
 \q
 ```
 
-Step 2 – Apply the schema
+**Step 2 – Apply the schema**
 
 From the project root:
 
@@ -124,9 +124,9 @@ This creates the four tables:
 
 - enrollment
 
-####📥 Load sample data with psql
+#### 📥 Load sample data with psql
 
-1. Connect to the database
+**1. Connect to the database**
 
 From the project root:
 
@@ -140,7 +140,7 @@ psql -U postgres -d dataacademy
 \cd '/absolute/path/to/dataacademy-teacher-dashboard'
 ```
 
-2. Load the CSV files using \COPY
+**2. Load the CSV files using \COPY**
 
 ```
 -- Teachers
@@ -164,7 +164,7 @@ FROM 'data/enrollments.csv'
 WITH (FORMAT csv, HEADER true);
 ```
 
-3. Fix sequences (so new inserts use the next ID)
+**3. Fix sequences (so new inserts use the next ID)**
 
 Because the CSVs provide explicit IDs, we move the sequences to the max ID:
 
@@ -175,7 +175,7 @@ SELECT setval(pg_get_serial_sequence('course',    'id'), (SELECT MAX(id) FROM co
 SELECT setval(pg_get_serial_sequence('enrollment','id'), (SELECT MAX(id) FROM enrollment));
 ```
 
-4. Verify the data
+**4. Verify the data**
 
 ```
 SELECT COUNT(*) FROM teacher;     -- ~40
@@ -186,7 +186,7 @@ SELECT COUNT(*) FROM enrollment;  -- ~3800
 
 If everything looks good: \q to exit psql.
 
-####▶️ Run the Streamlit dashboard
+#### ▶️ Run the Streamlit dashboard
 
 Make sure your virtual environment is active and you’re in the project root:
 
@@ -196,8 +196,8 @@ streamlit run app/dashboard.py
 
 Streamlit will open your browser at something like http://localhost:8501.
 
-##🧭 Dashboard overview
-####📚 Course Overview
+## 🧭 Dashboard overview
+#### 📚 Course Overview
 
 Filter courses by:
 
@@ -215,7 +215,7 @@ Active / completed / dropped counts
 
 Top-10 courses visualized as a horizontal bar chart.
 
-####🧑‍🎓 Student Search
+#### 🧑‍🎓 Student Search
 
 Search students by first name, last name, full name, or email.
 
@@ -233,7 +233,7 @@ Status
 
 Final grade
 
-####➕ Manage Students
+#### ➕ Manage Students
 
 Add a new student (first name, last name, email, registration date).
 
@@ -243,7 +243,7 @@ Protects against duplicate email addresses (unique constraint on student.email).
 
 Includes a Clear form button to quickly add another student.
 
-####🧠 SQL Insights
+#### 🧠 SQL Insights
 
 Choose from predefined example SQL queries, such as:
 
@@ -263,7 +263,7 @@ A sample of the result (first 10 rows)
 
 A chart visualizing the full result set (Altair)
 
-###🧩 Extending the project
+### 🧩 Extending the project
 
 Ideas for future improvements:
 
