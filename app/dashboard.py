@@ -36,7 +36,7 @@ def get_db_url():
         password = db_conf.get("password")
         host = db_conf.get("host", "localhost")
         port = db_conf.get("port", "5432")
-        db   = db_conf.get("name", "dataacademy")
+        db = db_conf.get("name", "dataacademy")
         sslmode = db_conf.get("sslmode", None)
     else:
         # 2) Environment variables
@@ -44,7 +44,7 @@ def get_db_url():
         password = os.getenv("DB_PASSWORD", "")
         host = os.getenv("DB_HOST", "localhost")
         port = os.getenv("DB_PORT", "5432")
-        db   = os.getenv("DB_NAME", "dataacademy")
+        db = os.getenv("DB_NAME", "dataacademy")
         sslmode = os.getenv("DB_SSLMODE", None)
 
     base_url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db}"
@@ -381,7 +381,7 @@ with tab_student:
 # ---------- TAB 3: MANAGE STUDENTS ----------
 with tab_manage:
     st.subheader("Add New Student & Enroll Them")
-# Set default date only via session_state (not via value=)
+    # Set default date only via session_state (not via value=)
 
     if "reg_date_input" not in st.session_state:
         st.session_state["reg_date_input"] = date.today()
@@ -475,6 +475,145 @@ with tab_manage:
                     )
                 else:
                     st.error(f"Error while saving to database: {e}")
+
+    # ---------- NEW SECTION: UPDATE GRADES FOR EXISTING STUDENTS ----------
+    st.markdown("---")
+    st.subheader("Update Grades for Existing Students")
+    st.caption(
+        "Find a student, pick one of their enrollments, and set a final grade. "
+        "You can also update the enrollment status if needed."
+    )
+
+    grade_search_term = st.text_input(
+        "Search student by name or email",
+        key="grade_search_input",
+        placeholder="e.g. Amanda, Gill, Amanda Gill, amanda.gill4@student.example.com",
+    )
+
+    if grade_search_term:
+        grade_students = run_query(
+            """
+            SELECT
+                id,
+                first_name,
+                last_name,
+                email
+            FROM student
+            WHERE first_name ILIKE '%' || :term || '%'
+               OR last_name  ILIKE '%' || :term || '%'
+               OR email      ILIKE '%' || :term || '%'
+               OR (first_name || ' ' || last_name) ILIKE '%' || :term || '%'
+            ORDER BY last_name, first_name
+            LIMIT 50;
+            """,
+            {"term": grade_search_term},
+        )
+
+        st.write(f"Found {len(grade_students)} student(s).")
+        st.dataframe(grade_students, use_container_width=True)
+
+        if not grade_students.empty:
+            selected_grade_student_id = st.selectbox(
+                "Choose a student",
+                grade_students["id"].tolist(),
+                key="grade_student_select",
+                format_func=lambda sid: grade_students.loc[
+                    grade_students["id"] == sid,
+                    ["first_name", "last_name", "email"],
+                ]
+                .agg(" ".join, axis=1)
+                .iloc[0],
+            )
+
+            # Load this student's enrollments
+            enrollments_for_student = run_query(
+                """
+                SELECT
+                    e.id,
+                    c.title AS course_title,
+                    c.level,
+                    e.enrollment_date,
+                    e.status,
+                    e.final_grade
+                FROM enrollment e
+                JOIN course c ON c.id = e.course_id
+                WHERE e.student_id = :sid
+                ORDER BY e.enrollment_date DESC;
+                """,
+                {"sid": int(selected_grade_student_id)},
+            )
+
+            if enrollments_for_student.empty:
+                st.info("This student has no enrollments yet.")
+            else:
+                st.write("Current enrollments for this student:")
+                st.dataframe(enrollments_for_student, use_container_width=True)
+
+                enrollment_choice = st.selectbox(
+                    "Select an enrollment to update grade",
+                    enrollments_for_student["id"].tolist(),
+                    key="enrollment_select",
+                    format_func=lambda eid: enrollments_for_student.loc[
+                        enrollments_for_student["id"] == eid,
+                        ["course_title", "status", "final_grade"],
+                    ]
+                    .fillna("—")                     # replace missing with a dash
+                    .astype(str)
+                    .agg(" | ".join, axis=1)
+                    .iloc[0],
+                )
+
+
+                grade_col1, grade_col2 = st.columns(2)
+                with grade_col1:
+                    new_grade = st.text_input(
+                        "Final grade (e.g. A, B, C, Pass, Fail)",
+                        key="new_grade_input",
+                    )
+                with grade_col2:
+                    status_options = [
+                        "Keep current status",
+                        "active",
+                        "completed",
+                        "dropped",
+                    ]
+                    status_choice = st.selectbox(
+                        "Update status (optional)",
+                        status_options,
+                        key="new_status_select",
+                    )
+
+                update_clicked = st.button("Save grade update")
+
+                if update_clicked:
+                    if not new_grade.strip():
+                        st.error("Please enter a grade before saving.")
+                    else:
+                        params = {
+                            "eid": int(enrollment_choice),
+                            "grade": new_grade.strip(),
+                        }
+                        if status_choice != "Keep current status":
+                            params["status"] = status_choice
+                            sql = """
+                                UPDATE enrollment
+                                SET final_grade = :grade,
+                                    status = :status
+                                WHERE id = :eid;
+                            """
+                        else:
+                            sql = """
+                                UPDATE enrollment
+                                SET final_grade = :grade
+                                WHERE id = :eid;
+                            """
+                        try:
+                            run_exec(sql, params)
+                            st.success(
+                                "Grade (and status, if changed) updated successfully."
+                            )
+                        except Exception as e:
+                            st.error(f"Error while updating grade: {e}")
 
 
 # ---------- TAB 4: SQL INSIGHTS ----------

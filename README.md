@@ -43,23 +43,32 @@ https://dataacademy-teacher-dashboard-yourname.streamlit.app
 
 ## 📁 Project structure
 
-```text
-dataacademy-portfolio/
+```
+dataacademy-teacher-dashboard/
+├── .git/
+├── .streamlit/
+│   └── secrets.toml
+├── .venv/                     # local virtual environment (not committed)
 ├── app/
-│   └── dashboard.py          # Streamlit app (main entry point)
+│   └── dashboard.py           # Streamlit app
 ├── data/
-│   ├── teachers.csv
-│   ├── students.csv
 │   ├── courses.csv
-│   └── enrollments.csv
+│   ├── enrollments.csv
+│   ├── students.csv
+│   └── teachers.csv
+├── diagram/
+│   ├── DataBasDiagram.pdf
+│   └── student_course_model.dbml
 ├── scripts/
-│   └── generate_data.py      # (optional) script to generate synthetic CSVs
+│   └── generate_data.py       # script to generate synthetic CSV data
 ├── sql/
-│   ├── schema.sql            # CREATE TABLE statements + constraints
-│   └── upload_data.sql       
+│   ├── schema.sql             # DDL – creates tables
+│   └── queries.sql            # example SQL queries
 ├── .gitignore
-├── requirements.txt
-└── README.md
+├── LICENSE
+├── README.md
+└── requirements.txt
+
 ```
 #### 🚀 Getting started
 **1. Prerequisites**
