@@ -1,0 +1,76 @@
+Loading sample data into PostgreSQL with psql
+
+Create the database
+
+Open a terminal in the project root and connect to PostgreSQL:
+
+psql -U postgres
+
+
+Inside psql, create the database:
+
+CREATE DATABASE dataacademy;
+\q
+
+
+Apply the schema
+
+From the project root, run:
+
+psql -U postgres -d dataacademy -f sql/schema.sql
+
+
+This creates the tables: student, teacher, course, enrollment.
+
+Move into the project folder inside psql (so relative paths work)
+
+psql -U postgres -d dataacademy
+
+
+In psql, change directory to the project root (adjust the path to your machine):
+
+\cd '/absolute/path/to/dataacademy-portfolio'
+
+
+Load each CSV with \COPY
+
+-- Teachers
+\COPY teacher (id, first_name, last_name, email, bio)
+FROM 'data/teachers.csv'
+WITH (FORMAT csv, HEADER true);
+
+-- Students
+\COPY student (id, first_name, last_name, email, registration_date)
+FROM 'data/students.csv'
+WITH (FORMAT csv, HEADER true);
+
+-- Courses
+\COPY course (id, title, description, level, credits, start_date, end_date, teacher_id)
+FROM 'data/courses.csv'
+WITH (FORMAT csv, HEADER true);
+
+-- Enrollments
+\COPY enrollment (id, student_id, course_id, enrollment_date, status, final_grade)
+FROM 'data/enrollments.csv'
+WITH (FORMAT csv, HEADER true);
+
+
+(Optional but recommended) Fix the ID sequences
+
+Because the CSVs insert explicit IDs, we should move the sequences to the max ID so future inserts don’t collide:
+
+SELECT setval(pg_get_serial_sequence('teacher',   'id'), (SELECT MAX(id) FROM teacher));
+SELECT setval(pg_get_serial_sequence('student',   'id'), (SELECT MAX(id) FROM student));
+SELECT setval(pg_get_serial_sequence('course',    'id'), (SELECT MAX(id) FROM course));
+SELECT setval(pg_get_serial_sequence('enrollment','id'), (SELECT MAX(id) FROM enrollment));
+
+
+Verify record counts
+
+SELECT COUNT(*) FROM teacher;     -- expect 40
+SELECT COUNT(*) FROM student;     -- expect 1500
+SELECT COUNT(*) FROM course;      -- expect 120
+SELECT COUNT(*) FROM enrollment;  -- ~3800
+
+
+If the counts look good, you’re done. Type \q to exit psql.
