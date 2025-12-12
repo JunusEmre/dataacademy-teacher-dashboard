@@ -54,7 +54,7 @@ dataacademy-portfolio/
 │   └── generate_data.py      # (optional) script to generate synthetic CSVs
 ├── sql/
 │   ├── schema.sql            # CREATE TABLE statements + constraints
-│   └── upload_data.sql       # (optional) COPY commands (if you prefer)
+│   └── upload_data.sql       
 ├── .gitignore
 ├── requirements.txt
 └── README.md
