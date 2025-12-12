@@ -22,13 +22,37 @@ import altair as alt
 
 
 def get_db_url():
-    # In real life, keep credentials in environment variables or .env
-    user = os.getenv("DB_USER", "postgres")
-    password = os.getenv("DB_PASSWORD", "Py509260")  # <-- your local password
-    host = os.getenv("DB_HOST", "localhost")
-    port = os.getenv("DB_PORT", "5432")
-    db = os.getenv("DB_NAME", "dataacademy")
-    return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db}"
+    """
+    Build the PostgreSQL connection URL.
+
+    Priority:
+    1. Streamlit secrets (for local + Cloud)
+    2. Environment variables (fallback)
+    """
+    # 1) Streamlit secrets
+    if "db" in st.secrets:
+        db_conf = st.secrets["db"]
+        user = db_conf.get("user")
+        password = db_conf.get("password")
+        host = db_conf.get("host", "localhost")
+        port = db_conf.get("port", "5432")
+        db   = db_conf.get("name", "dataacademy")
+        sslmode = db_conf.get("sslmode", None)
+    else:
+        # 2) Environment variables
+        user = os.getenv("DB_USER", "postgres")
+        password = os.getenv("DB_PASSWORD", "")
+        host = os.getenv("DB_HOST", "localhost")
+        port = os.getenv("DB_PORT", "5432")
+        db   = os.getenv("DB_NAME", "dataacademy")
+        sslmode = os.getenv("DB_SSLMODE", None)
+
+    base_url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db}"
+
+    # Append SSL parameters if provided (needed for Neon)
+    if sslmode:
+        return f"{base_url}?sslmode={sslmode}"
+    return base_url
 
 
 @st.cache_resource

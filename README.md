@@ -11,6 +11,8 @@ This project is designed as a **portfolio piece** to show:
 - Practical queries for a real-world scenario
 - A small but clean dashboard in Streamlit
 
+🔗 **Live demo on Streamlit:**  
+https://dataacademy-teacher-dashboard-yourname.streamlit.app
 ---
 
 ## ✨ Features
