@@ -54,12 +54,12 @@ dataacademy-portfolio/
 │   └── generate_data.py      # (optional) script to generate synthetic CSVs
 ├── sql/
 │   ├── schema.sql            # CREATE TABLE statements + constraints
-│   └── upload_data.sql       # (optional) COPY commands (if you prefer)
+│   └── upload_data.sql       
 ├── .gitignore
 ├── requirements.txt
 └── README.md
 ```
-🚀 Getting started
+####🚀 Getting started
 1. Prerequisites
 
 Python 3.10+
@@ -91,7 +91,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-🗄️ Create the PostgreSQL database
+####🗄️ Create the PostgreSQL database
 Step 1 – Create the dataacademy database
 
 ```
@@ -124,7 +124,7 @@ This creates the four tables:
 
 - enrollment
 
-📥 Load sample data with psql
+####📥 Load sample data with psql
 
 1. Connect to the database
 
@@ -186,7 +186,7 @@ SELECT COUNT(*) FROM enrollment;  -- ~3800
 
 If everything looks good: \q to exit psql.
 
-▶️ Run the Streamlit dashboard
+####▶️ Run the Streamlit dashboard
 
 Make sure your virtual environment is active and you’re in the project root:
 
@@ -196,8 +196,8 @@ streamlit run app/dashboard.py
 
 Streamlit will open your browser at something like http://localhost:8501.
 
-🧭 Dashboard overview
-📚 Course Overview
+##🧭 Dashboard overview
+####📚 Course Overview
 
 Filter courses by:
 
@@ -215,7 +215,7 @@ Active / completed / dropped counts
 
 Top-10 courses visualized as a horizontal bar chart.
 
-🧑‍🎓 Student Search
+####🧑‍🎓 Student Search
 
 Search students by first name, last name, full name, or email.
 
@@ -233,7 +233,7 @@ Status
 
 Final grade
 
-➕ Manage Students
+####➕ Manage Students
 
 Add a new student (first name, last name, email, registration date).
 
@@ -243,7 +243,7 @@ Protects against duplicate email addresses (unique constraint on student.email).
 
 Includes a Clear form button to quickly add another student.
 
-🧠 SQL Insights
+####🧠 SQL Insights
 
 Choose from predefined example SQL queries, such as:
 
@@ -263,7 +263,7 @@ A sample of the result (first 10 rows)
 
 A chart visualizing the full result set (Altair)
 
-🧩 Extending the project
+###🧩 Extending the project
 
 Ideas for future improvements:
 
