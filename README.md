@@ -12,7 +12,7 @@ This project is designed as a **portfolio piece** to show:
 - A small but clean dashboard in Streamlit
 
 🔗 **Live demo on Streamlit:**  
-https://dataacademy-teacher-dashboard-yourname.streamlit.app
+https://dataacademy-teacher-dashboard-f8wz8dfr9rm7lfdqrftzvt.streamlit.app/
 ---
 
 ## ✨ Features
