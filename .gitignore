@@ -12,7 +12,7 @@ build/
 develop-eggs/
 dist/
 downloads/
-streamlit/
+.streamlit/
 eggs/
 .eggs/
 lib/
